@@ -1,20 +1,85 @@
+const cartItems = [];
 const removeActiveClass = () => {
-    const buttons = document.querySelectorAll(".category-btn");
+  const buttons = document.querySelectorAll(".category-btn");
 
-    buttons.forEach(btn => {
-        btn.classList.remove("active-btn");
-    });
+  buttons.forEach((btn) => {
+    btn.classList.remove("active-btn");
+  });
 };
 const setActiveClass = (btn) => {
-    removeActiveClass();
-    btn.classList.add("active-btn");
+  removeActiveClass();
+  btn.classList.add("active-btn");
+};
+
+const addToCart = (name, price) => {
+  const existingItem = cartItems.find((item) => item.name === name);
+
+  if (existingItem) {
+    existingItem.quantity++;
+  } else {
+    cartItems.push({
+      name,
+      price,
+      quantity: 1,
+    });
+  }
+
+  renderCart();
+};
+const removeFromCart = (name) => {
+
+    const item = cartItems.find(
+        item => item.name === name
+    );
+
+    if (!item) return;
+
+    item.quantity--;
+
+    if (item.quantity === 0) {
+
+        const index = cartItems.findIndex(
+            item => item.name === name
+        );
+
+        cartItems.splice(index, 1);
+    }
+
+    renderCart();
+};
+const renderCart = () => {
+  const cartItem = document.getElementById("cart-item");
+
+  cartItem.innerHTML = "";
+
+  let total = 0;
+
+  cartItems.forEach((item) => {
+    total += item.price * item.quantity;
+
+    cartItem.innerHTML += `
+        <div class="mt-2 flex items-center justify-between bg-[#f0fdf4] px-3 py-2 rounded-md">
+            <div>
+                <h1>${item.name}</h1>
+                <p>
+                    ৳ ${item.price} x ${item.quantity}
+                </p>
+            </div>
+            <div>
+                <i onclick="removeFromCart('${item.name}')" class="fa-solid fa-xmark cursor-pointer text-red-500"></i>
+            </div>
+        </div>
+        `;
+  });
+
+  document.getElementById("total-price").innerText = "৳ " + total;
 };
 
 const loadModal = (id) => {
-    fetch(`https://openapi.programming-hero.com/api/plant/${id}`)
+  fetch(`https://openapi.programming-hero.com/api/plant/${id}`)
     .then((resp) => resp.json())
     .then((data) => displayModal(data.plants));
-}
+};
 // id	1
 // image	"https://i.ibb.co.com/cSQdg7tf/mango-min.jpg"
 // name	"Mango Tree"
@@ -22,9 +87,8 @@ const loadModal = (id) => {
 // category	"Fruit Tree"
 // price	500
 const displayModal = (data) => {
-    
-    const modalInfo = document.getElementById("modal-info")
-    modalInfo.innerHTML = `
+  const modalInfo = document.getElementById("modal-info");
+  modalInfo.innerHTML = `
     <div class="card bg-base-100 w-full shadow-sm rounded-xl">
                                         <figure class="p-5 pb-0">
                                             <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${data.image}"
@@ -36,8 +100,8 @@ const displayModal = (data) => {
                                         </div>
                                     </div>
     `;
-    document.getElementById("my_modal").showModal();
-}
+  document.getElementById("my_modal").showModal();
+};
 
 // id	1
 // image	"https://i.ibb.co.com/cSQdg7tf/mango-min.jpg"
@@ -46,23 +110,22 @@ const displayModal = (data) => {
 // category	"Fruit Tree"
 // price	500
 const loadCatTree = (id, btn) => {
-    setActiveClass(btn);
+  setActiveClass(btn);
 
-    fetch(`https://openapi.programming-hero.com/api/category/${id}`)
+  fetch(`https://openapi.programming-hero.com/api/category/${id}`)
     .then((resp) => resp.json())
-    .then((data) => displayTreeCatWise(data.plants))
-}
+    .then((data) => displayTreeCatWise(data.plants));
+};
 displayTreeCatWise = (data) => {
+  const allCatCards = document.getElementById("all-cat-cards");
+  allCatCards.innerHTML = "";
 
-    const allCatCards = document.getElementById("all-cat-cards");
-    allCatCards.innerHTML = "";
+  data.forEach((item) => {
+    // console.log(item.name)
 
-    data.forEach(item => {
-        // console.log(item.name)
-
-        const card = document.createElement("div");
-        card.innerHTML = `
-        <div onclick = "loadModal(${item.id})" class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
+    const card = document.createElement("div");
+    card.innerHTML = `
+        <div class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
                             <figure class="p-5 pb-0">
                                 <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${item.image}" alt="Tree" />
                             </figure>
@@ -70,19 +133,19 @@ displayTreeCatWise = (data) => {
                                 <h2 class="card-title">${item.name}</h2>
                                 <p>${item.description}</p>
                                 <div class="flex items-center justify-between px-2">
-                                    <button class="btn btn-soft btn-success border-none shadow-none">${item.category}</button>
+                                    <button onclick = "loadModal(${item.id})" class="btn btn-soft btn-success border-none shadow-none">${item.category}</button>
                                     <h1 class = "text-xl font-semibold">৳ ${item.price}</h1>
                                 </div>
                                 <div class="card-actions">
-                                    <button class="btn btn-ghost text-[#15803d] hover:bg-[#15803d] hover:text-white font-medium border-[#15803d] shadow-none rounded-full w-full">Add to Cart</button>
+                                    <button onclick = "addToCart('${item.name}', ${item.price})" class="btn btn-ghost text-[#15803d] hover:bg-[#15803d] hover:text-white font-medium border-[#15803d] shadow-none rounded-full w-full">Add to Cart</button>
                                 </div>
                             </div>
                         </div>
         `;
-        
-        allCatCards.appendChild(card);
-    })
-}
+
+    allCatCards.appendChild(card);
+  });
+};
 
 const loadAllBtn = () => {
   fetch("https://openapi.programming-hero.com/api/categories")
@@ -93,29 +156,28 @@ const loadAllBtn = () => {
 // category_name	"Fruit Tree"
 // small_description	"Trees that bear edible fruits like mango, guava, and jackfruit."
 const displayAllBtn = (data) => {
-
-    const allCatBtn = document.getElementById("all-cat-btn");
-    allCatBtn.innerHTML = `
-    <button onclick = "loadAllCard(this), setActiveClass(this)" class="btn btn-ghost font-medium border-none shadow-none category-btn active-btn">All Categories</button>
+  const allCatBtn = document.getElementById("all-cat-btn");
+  allCatBtn.innerHTML = `
+    <button onclick = "loadAllCard(this), setActiveClass(this)" class="btn btn-ghost hover:bg-[#15803d] hover:text-white font-medium border-none shadow-none category-btn active-btn">All Categories</button>
     `;
 
-    data.forEach(item => {
-        // console.log(item.category_name)
+  data.forEach((item) => {
+    // console.log(item.category_name)
 
-        const catBtn = document.createElement("div");
-        catBtn.innerHTML = `
+    const catBtn = document.createElement("div");
+    catBtn.innerHTML = `
         <button onclick = "loadCatTree(${item.id}, this)" class="btn btn-ghost hover:bg-[#15803d] hover:text-white font-medium border-none shadow-none category-btn">${item.category_name}</button>
         `;
 
-        allCatBtn.appendChild(catBtn);
-    });
-}
+    allCatBtn.appendChild(catBtn);
+  });
+};
 
 const loadAllCard = () => {
-    fetch("https://openapi.programming-hero.com/api/plants")
+  fetch("https://openapi.programming-hero.com/api/plants")
     .then((resp) => resp.json())
-    .then((data) => displayAllCard(data.plants))
-}
+    .then((data) => displayAllCard(data.plants));
+};
 // id	1
 // image	"https://i.ibb.co.com/cSQdg7tf/mango-min.jpg"
 // name	"Mango Tree"
@@ -123,16 +185,15 @@ const loadAllCard = () => {
 // category	"Fruit Tree"
 // price	500
 const displayAllCard = (data) => {
+  const allCatCards = document.getElementById("all-cat-cards");
+  allCatCards.innerHTML = "";
 
-    const allCatCards = document.getElementById("all-cat-cards");
-    allCatCards.innerHTML = "";
+  data.forEach((item) => {
+    // console.log(item.name)
 
-    data.forEach(item => {
-        // console.log(item.name)
-
-        const card = document.createElement("div");
-        card.innerHTML = `
-        <div onclick = "loadModal(${item.id})" class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
+    const card = document.createElement("div");
+    card.innerHTML = `
+        <div class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
                             <figure class="p-5 pb-0">
                                 <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${item.image}" alt="Shoes" />
                             </figure>
@@ -140,50 +201,44 @@ const displayAllCard = (data) => {
                                 <h2 class="card-title">${item.name}</h2>
                                 <p>${item.description}</p>
                                 <div class="flex items-center justify-between px-2">
-                                    <button class="btn btn-soft btn-success border-none shadow-none">${item.category}</button>
+                                    <button onclick = "loadModal(${item.id})" class="btn btn-soft btn-success border-none shadow-none">${item.category}</button>
                                     <h1 class = "text-xl font-semibold">৳ ${item.price}</h1>
                                 </div>
                                 <div class="card-actions">
-                                    <button class="btn btn-ghost text-[#15803d] hover:bg-[#15803d] hover:text-white font-medium border-[#15803d] shadow-none rounded-full w-full">Add to Cart</button>
+                                    <button onclick = "addToCart('${item.name}', ${item.price})" class="btn btn-ghost text-[#15803d] hover:bg-[#15803d] hover:text-white font-medium border-[#15803d] shadow-none rounded-full w-full">Add to Cart</button>
                                 </div>
                             </div>
                         </div>
         `;
-        
-        allCatCards.appendChild(card);
-    });
-}
 
+    allCatCards.appendChild(card);
+  });
+};
 
 const loadCart = () => {
-    
-    const cart = document.getElementById("carts");
-    cart.innerHTML = "";
-    const cartItem = document.createElement("div");
-    cartItem.innerHTML = `
+  const cart = document.getElementById("carts");
+
+  cart.innerHTML = `
     <div class="bg-base-100 w-72 p-5 min-h-96 rounded-xl">
-                            <h1 class="text-xl font-semibold mb-5">Your Cart</h1>
-                            <div class="mt-2 flex items-center justify-between bg-[#f0fdf4] px-3 py-2 rounded-md">
-                                <div class="space-y-2">
-                                    <h1 class="text-base font-semibold">Mango Tree</h1>
-                                    <p class="text-gray-400 font-normal">৳ 500 x 1</p>
-                                </div>
-                                <div>
-                                    <i class="fa-solid fa-xmark"></i>
-                                </div>
-                            </div>
-                            <hr class= "mt-5 text-gray-400">
-                            <div class="flex items-center justify-between mt-10">
-                                <h1 class="text-xl font-semibold">Total: </h1>
-                                <p class="text-gray-500 text-xl font-semibold">৳ 10000</p>
-                            </div>
-                        </div>
+        <h1 class="text-xl font-semibold mb-5">
+            Your Cart
+        </h1>
+
+        <div id="cart-item"></div>
+
+        <div class="flex items-center justify-between mt-10">
+            <h1 class="text-xl font-semibold">
+                Total:
+            </h1>
+
+            <p id="total-price" class="text-gray-500 text-xl font-semibold">
+                0
+            </p>
+        </div>
+    </div>
     `;
+};
 
-    cart.appendChild(cartItem)
-}
-
-
-loadCart()
-loadAllCard()
+loadCart();
+loadAllCard();
 loadAllBtn();
