@@ -4,3 +4,7 @@
 .btn-bg {
     background-color: #FACC15;
 }
+.active-btn {
+    background-color: #15803d;
+    color: white;
+}
