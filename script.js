@@ -1,4 +1,5 @@
 const cartItems = [];
+
 const removeActiveClass = () => {
   const buttons = document.querySelectorAll(".category-btn");
 
@@ -116,7 +117,7 @@ const loadCatTree = (id, btn) => {
     .then((resp) => resp.json())
     .then((data) => displayTreeCatWise(data.plants));
 };
-displayTreeCatWise = (data) => {
+const displayTreeCatWise = (data) => {
   const allCatCards = document.getElementById("all-cat-cards");
   allCatCards.innerHTML = "";
 
