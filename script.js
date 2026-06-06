@@ -10,6 +10,35 @@ const setActiveClass = (btn) => {
     btn.classList.add("active-btn");
 };
 
+const loadModal = (id) => {
+    fetch(`https://openapi.programming-hero.com/api/plant/${id}`)
+    .then((resp) => resp.json())
+    .then((data) => displayModal(data.plants));
+}
+// id	1
+// image	"https://i.ibb.co.com/cSQdg7tf/mango-min.jpg"
+// name	"Mango Tree"
+// description	"A fast-growing tropical tree that produces delicious, juicy mangoes during summer. Its dense green canopy offers shade, while its sweet fruits are rich in vitamins and minerals."
+// category	"Fruit Tree"
+// price	500
+const displayModal = (data) => {
+    
+    const modalInfo = document.getElementById("modal-info")
+    modalInfo.innerHTML = `
+    <div class="card bg-base-100 w-full shadow-sm rounded-xl">
+                                        <figure class="p-5 pb-0">
+                                            <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${data.image}"
+                                                alt="Tree" />
+                                        </figure>
+                                        <div class="card-body space-y-1">
+                                            <h2 class="card-title">${data.name}</h2>
+                                            <p>${data.description}</p>
+                                        </div>
+                                    </div>
+    `;
+    document.getElementById("my_modal").showModal();
+}
+
 // id	1
 // image	"https://i.ibb.co.com/cSQdg7tf/mango-min.jpg"
 // name	"Mango Tree"
@@ -33,9 +62,9 @@ displayTreeCatWise = (data) => {
 
         const card = document.createElement("div");
         card.innerHTML = `
-        <div class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
+        <div onclick = "loadModal(${item.id})" class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
                             <figure class="p-5 pb-0">
-                                <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${item.image}" alt="Shoes" />
+                                <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${item.image}" alt="Tree" />
                             </figure>
                             <div class="card-body space-y-1">
                                 <h2 class="card-title">${item.name}</h2>
@@ -103,7 +132,7 @@ const displayAllCard = (data) => {
 
         const card = document.createElement("div");
         card.innerHTML = `
-        <div class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
+        <div onclick = "loadModal(${item.id})" class="card bg-base-100 max-w-96 shadow-sm rounded-xl">
                             <figure class="p-5 pb-0">
                                 <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${item.image}" alt="Shoes" />
                             </figure>
@@ -143,6 +172,7 @@ const loadCart = () => {
                                     <i class="fa-solid fa-xmark"></i>
                                 </div>
                             </div>
+                            <hr class= "mt-5 text-gray-400">
                             <div class="flex items-center justify-between mt-10">
                                 <h1 class="text-xl font-semibold">Total: </h1>
                                 <p class="text-gray-500 text-xl font-semibold">৳ 10000</p>

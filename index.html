@@ -136,6 +136,33 @@
                             </div>
                         </div> -->
                     </div>
+                    <!-- Modal -->
+                    <div id="modal">
+                        <!-- Open the modal using ID.showModal() method -->
+                        <!-- <button class="btn" onclick="my_modal_1.showModal()">open modal</button> -->
+                        <dialog id="my_modal" class="modal">
+                            <div class="modal-box">
+                                <div id="modal-info">
+                                    <div class="card bg-base-100 w-full shadow-sm rounded-xl">
+                                        <figure class="p-5 pb-0">
+                                            <img class="rounded-xl h-[250px] w-full object-cover object-center" src="${item.image}"
+                                                alt="Tree" />
+                                        </figure>
+                                        <div class="card-body space-y-1">
+                                            <h2 class="card-title">${item.name}</h2>
+                                            <p>${item.description}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-action">
+                                    <form method="dialog">
+                                        <!-- if there is a button in form, it will close the modal -->
+                                        <button class="btn btn-ghost text-[#15803d] hover:bg-[#15803d] hover:text-white font-medium border-[#15803d] shadow-none">Close</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+                    </div>
                 </div>
             </div>
         </section>
